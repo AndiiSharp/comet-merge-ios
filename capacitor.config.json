@@ -1,1 +1,1 @@
-{"appId":"com.pixelmerge.cascade","appName":"Comet Merge","webDir":"www","backgroundColor":"#F5F2FF","ios":{"contentInset":"never","scrollEnabled":false,"backgroundColor":"#F5F2FF"}}
+{"appId":"com.pixelmerge.cascade","appName":"Comet Merge","webDir":"www","backgroundColor":"#F5F2FF","ios":{"contentInset":"never","scrollEnabled":false,"backgroundColor":"#F5F2FF"},"android":{"allowMixedContent":false,"webContentsDebuggingEnabled":false}}

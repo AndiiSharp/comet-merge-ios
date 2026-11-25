@@ -217,9 +217,9 @@ function render() {
 async function toggle(k) {
   if (k === 'reminder') {
     const on = !S.reminder;
-    if (on && Notif) { try { const p = await Notif.requestPermissions(); if (p.display !== 'granted') { $('#remnote').textContent = t('settings_reminder_permission_denied').replace(/Android/g, 'iOS'); return; } } catch (e) { return; } }
+    if (on && Notif) { try { const p = await Notif.requestPermissions(); if (p.display !== 'granted') { $('#remnote').textContent = (window.Capacitor && Capacitor.getPlatform && Capacitor.getPlatform() === 'ios' ? t('settings_reminder_permission_denied').replace(/Android/g, 'iOS') : t('settings_reminder_permission_denied')); return; } } catch (e) { return; } }
     S.reminder = on; LS.set('settings', S);
-    if (Notif) { try { await Notif.cancel({ notifications: [{ id: 1 }] }); if (on) { const at = new Date(Date.now() + 24 * 3600000); await Notif.schedule({ notifications: [{ id: 1, title: t('reminder_title'), body: t('menu_title'), schedule: { on: { hour: at.getHours(), minute: at.getMinutes() }, allowWhileIdle: true } }] }); } } catch (e) {} }
+    if (Notif) { try { await Notif.cancel({ notifications: [{ id: 1 }] }); if (on) { const at = new Date(Date.now() + 24 * 3600000); await Notif.schedule({ notifications: [{ id: 1, isExactNotification: false, title: t('reminder_title'), body: t('menu_title'), schedule: { on: { hour: at.getHours(), minute: at.getMinutes() } } }] }); } } catch (e) {} }
   } else { S[k] = !S[k]; LS.set('settings', S); }
   render();
 }
