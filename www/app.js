@@ -13,7 +13,7 @@ const SKINS = { classic: ['#FF5252', '#448AFF', '#69F0AE', '#FFD740', '#B388FF',
 const SKIN_PRICE = { classic: 0, neon: 150, pastel: 150, ocean: 250, sunset: 400 };
 const PU_PRICE = { BOMB: 60, PAINT: 90, SHUFFLE: 40, UNDO: 70 };
 let rngSeed = null; function rng() { if (rngSeed == null) return Math.random(); rngSeed = (rngSeed * 1103515245 + 12345) & 0x7fffffff; return rngSeed / 0x80000000; }
-const dayKey = () => new Date().toISOString().slice(0, 10);
+const dayKey = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 const PRIVACY_URL = 'https://andiisharp.github.io/lumvero-apps/comet-merge-datenschutz.html';
 const $ = (s, r = document) => r.querySelector(s);
 const LS = { get(k, d) { try { const v = localStorage.getItem('cm.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
