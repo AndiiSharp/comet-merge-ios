@@ -12,9 +12,6 @@ xcodebuild $SRC -scheme App -configuration Debug -sdk iphonesimulator \
   -destination 'generic/platform=iOS Simulator' -derivedDataPath build/demo CODE_SIGNING_ALLOWED=NO build | tail -n 3
 APP="build/demo/Build/Products/Debug-iphonesimulator/App.app"
 BID=$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$APP/Info.plist")
-cp "$ROOT/demo/demo-core.js" "$ROOT/demo/demo-$DEMO_APP.js" "$APP/public/"
-perl -0pi -e "s#</body>#<script src=\"demo-core.js\"></script><script src=\"demo-$DEMO_APP.js\"></script></body>#" "$APP/public/index.html"
-grep -c "demo-core.js" "$APP/public/index.html"
 
 UDID=$(xcrun simctl list devices available -j | python3 -c "
 import json,sys
@@ -29,8 +26,16 @@ echo "Geraet: $UDID"
 xcrun simctl boot "$UDID" 2>/dev/null || true
 xcrun simctl bootstatus "$UDID" -b > /dev/null
 xcrun simctl status_bar "$UDID" override --time 9:41 --dataNetwork wifi --wifiMode active --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100 || true
+# Vorstart ohne Rundgang (WebKit aufwaermen, sonst bleibt der erste Start im Simulator lange schwarz)
 xcrun simctl install "$UDID" "$APP"
-sleep 15
+xcrun simctl launch "$UDID" "$BID"; sleep 40
+xcrun simctl terminate "$UDID" "$BID" || true
+# Rundgang nur in diese Simulator-Kopie einfuegen und neu installieren (App-Daten bleiben leer, da noch nichts bedient wurde)
+cp "$ROOT/demo/demo-core.js" "$ROOT/demo/demo-$DEMO_APP.js" "$APP/public/"
+perl -0pi -e "s#</body>#<script src=\"demo-core.js\"></script><script src=\"demo-$DEMO_APP.js\"></script></body>#" "$APP/public/index.html"
+grep -c "demo-core.js" "$APP/public/index.html"
+xcrun simctl install "$UDID" "$APP"
+sleep 10
 xcrun simctl io "$UDID" recordVideo --codec=h264 --force "$OUT/$DEMO_APP-demo.mp4" &
 REC=$!
 sleep 4
